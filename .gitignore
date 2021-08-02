@@ -1,0 +1,5 @@
+.idea/
+mariadb/*
+!mariadb/.gitkeep
+vendor/
+composer.lock

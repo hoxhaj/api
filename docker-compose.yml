@@ -1,0 +1,63 @@
+version: '2'
+
+services:
+
+ db:
+  container_name: db
+  image: mariadb:10.6
+  restart: always
+  volumes:
+   - ./mariadb:/var/lib/mysql
+   - ./data/init.sql:/docker-entrypoint-initdb.d/initdb.sql
+  environment:
+   MYSQL_ROOT_PASSWORD: root
+   MYSQL_USER: admin
+   MYSQL_PASSWORD: test
+   MYSQL_DATABASE: nested_set_mode
+  ports:
+   - 3306:3306
+  networks:
+   - app-network
+
+ web:
+  container_name: web
+  restart: always
+  build:
+   context: .
+   dockerfile: phpApache.Dockerfile
+  image: api:v1
+  ports:
+   - 80:80
+  depends_on:
+   - db
+  volumes:
+   - ./src:/var/www/html
+  networks:
+   - app-network
+
+ composer:
+  container_name: composer
+  image: composer:2.1
+  volumes:
+   - ./src:/app
+  depends_on:
+   - web
+  command: composer install --ignore-platform-reqs
+
+ phpmyadmin:
+  container_name: phpmyadmin
+  image: phpmyadmin/phpmyadmin:5.1
+  depends_on:
+   - db
+  ports:
+   - 3000:80
+  environment:
+   MYSQL_USER: admin
+   MYSQL_PASSWORD: test
+   MYSQL_DATABASE: nested_set_mode
+  networks:
+   - app-network
+
+networks:
+ app-network:
+  name: api
