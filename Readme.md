@@ -27,5 +27,5 @@ Accepted variables:
 
 Example url:
 ```
-/v1/search?node_id=5&language=english&search_keyword=sa&page_num=0&page_size=100
+http://localhost/v1/search?node_id=5&language=english&search_keyword=sa&page_num=0&page_size=100
 ```

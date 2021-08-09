@@ -99,12 +99,22 @@ class NodeRepository implements RepositoryInterface
 
         $sql = "
             SELECT
-            subTree.idNode, subTree.nodes, node_tree_names.nodeName
+            subTree.idNode, node_tree_names.nodeName,
+            (
+                SELECT
+                    COUNT(*)
+                FROM
+                    node_tree AS node, node_tree AS root
+                WHERE
+                    node.level = root.level + 1
+                    AND node.iLeft > root.iLeft
+                    AND node.iRight < root.iRight
+                    AND root.iLeft = subTree.iLeft
+            ) as nodes
             FROM
             (
                 SELECT
-                   node.idNode,
-                   ROUND ((node.iRight - node.iLeft - 1) / 2) AS nodes
+                   node.idNode, node.iLeft
                 FROM
                    node_tree AS node, node_tree AS root
                 WHERE
